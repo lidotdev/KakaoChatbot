@@ -148,6 +148,10 @@
         </div>
 
         <div class="img-input-area" id="img-paste">
+          <div class="field" style="margin-bottom:8px;">
+            <label>저장할 파일명 (확장자 포함)</label>
+            <input type="text" id="pasteFilename" placeholder="예) 원피스_2.png">
+          </div>
           <div class="paste-area" id="pasteArea" tabindex="0"
             onclick="this.focus()"
             onpaste="handlePaste(event)"
@@ -157,6 +161,10 @@
         </div>
 
         <div class="img-input-area" id="img-file">
+          <div class="field" style="margin-bottom:8px;">
+            <label>저장할 파일명 (확장자 포함)</label>
+            <input type="text" id="fileFilename" placeholder="예) 원피스_2.png">
+          </div>
           <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
         </div>
 
@@ -580,45 +588,76 @@ function addQuiz() {
   var answers = answerRaw.split(",").map(function(a) { return a.trim(); }).filter(Boolean);
   var id = getNextId(cat);
 
-  db[cat].push({ id: id, img: imgUrl, answer: answers, hint: hint });
-  saveDb();
+  var pasteFilename = document.getElementById("pasteFilename") ? document.getElementById("pasteFilename").value.trim() : "";
+  var fileFilename  = document.getElementById("fileFilename")  ? document.getElementById("fileFilename").value.trim()  : "";
+  var uploadFilename = (currentImgType === "paste" ? pasteFilename : fileFilename);
 
-  document.getElementById("addFilename").value = "";
-  document.getElementById("addAnswer").value   = "";
-  document.getElementById("addHint").value     = "";
-  document.getElementById("pasteArea").textContent = "클릭 후 Ctrl+V 로 이미지 붙여넣기";
-  if (document.getElementById("fileInput")) document.getElementById("fileInput").value = "";
-  currentImgUrl = "";
-  currentImgBase64 = "";
-  updatePreviewDisplay("", "");
-
-  showToast("추가 중... GitHub 업로드 시작!");
-  renderList();
-
-  var cfg = getGhConfig();
-  if (!cfg.token) {
-    showToast("추가 완료! (Token 미설정 - 수동 업로드 필요)");
-    return;
+  if (currentImgBase64 && !uploadFilename) {
+    showToast("파일명을 입력해주세요! (예: 원피스_2.png)"); return;
   }
 
-  var newItem = db[cat][db[cat].length - 1];
-  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+  function doAdd(finalImgUrl) {
+    db[cat].push({ id: id, img: finalImgUrl, answer: answers, hint: hint });
+    saveDb();
 
-  uploadFile(cfg, "quiz.json", jsonContent, "퀴즈 추가 #" + id)
-    .then(function(r) {
-      if (!r.ok) throw new Error("JSON 업로드 실패");
-      if (cat === "anime") {
-        return uploadFile(cfg, "quiz/anime/" + id + ".html", generateHtml(newItem, "anime"), "퀴즈 HTML 추가 #" + id);
-      }
-      return Promise.resolve({ ok: true });
-    })
-    .then(function(r) {
-      if (!r.ok) throw new Error("HTML 업로드 실패");
-      showToast("✅ 추가 & 업로드 완료! ID: " + id);
-    })
-    .catch(function(e) {
-      showToast("⚠️ 추가됐지만 업로드 실패: " + e.message);
-    });
+    document.getElementById("addFilename").value = "";
+    document.getElementById("addAnswer").value   = "";
+    document.getElementById("addHint").value     = "";
+    if (document.getElementById("pasteFilename")) document.getElementById("pasteFilename").value = "";
+    if (document.getElementById("fileFilename"))  document.getElementById("fileFilename").value  = "";
+    document.getElementById("pasteArea").textContent = "클릭 후 Ctrl+V 로 이미지 붙여넣기";
+    if (document.getElementById("fileInput")) document.getElementById("fileInput").value = "";
+    currentImgUrl = ""; currentImgBase64 = "";
+    updatePreviewDisplay("", "");
+    renderList();
+
+    var cfg = getGhConfig();
+    if (!cfg.token) { showToast("추가 완료! (Token 미설정 - 수동 업로드 필요)"); return; }
+
+    var newItem = db[cat][db[cat].length - 1];
+    var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+
+    showToast("GitHub 업로드 중...");
+    uploadFile(cfg, "quiz.json", jsonContent, "퀴즈 추가 #" + id)
+      .then(function(r) {
+        if (!r.ok) throw new Error("JSON 업로드 실패");
+        if (cat === "anime") {
+          return uploadFile(cfg, "quiz/anime/" + id + ".html", generateHtml(newItem, "anime"), "퀴즈 HTML 추가 #" + id);
+        }
+        return Promise.resolve({ ok: true });
+      })
+      .then(function(r) {
+        if (!r.ok) throw new Error("HTML 업로드 실패");
+        showToast("✅ 추가 & 업로드 완료! ID: " + id);
+      })
+      .catch(function(e) { showToast("⚠️ 업로드 실패: " + e.message); });
+  }
+
+  if (currentImgBase64 && uploadFilename) {
+    var cfg2 = getGhConfig();
+    if (!cfg2.token) { showToast("Token이 없어 이미지 업로드 불가. 설정 탭에서 Token을 입력해주세요."); return; }
+    showToast("이미지 업로드 중...");
+    var base64Data = currentImgBase64.split(",")[1];
+    var imgPath = "anime/" + uploadFilename;
+    getFileSha(cfg2, imgPath).then(function(sha) {
+      var body = { message: "이미지 추가: " + uploadFilename, content: base64Data, branch: cfg2.branch };
+      if (sha) body.sha = sha;
+      return fetch("https://api.github.com/repos/" + cfg2.repo + "/contents/" + imgPath, {
+        method: "PUT",
+        headers: { "Authorization": "token " + cfg2.token, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    }).then(function(r) {
+      if (!r.ok) throw new Error("이미지 업로드 실패");
+      var encodedName = uploadFilename.split("").map(function(ch) {
+        return ch.charCodeAt(0) > 127 ? encodeURIComponent(ch) : ch;
+      }).join("");
+      var githubImgUrl = "https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/anime/" + encodedName;
+      doAdd(githubImgUrl);
+    }).catch(function(e) { showToast("❌ 이미지 업로드 실패: " + e.message); });
+  } else {
+    doAdd(imgUrl);
+  }
 }
 
 function renderList() {
