@@ -108,7 +108,8 @@
 <div class="container">
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('add')">퀴즈 추가</div>
+    <div class="tab active" onclick="showTab('add')">만화 퀴즈 추가</div>
+    <div class="tab" onclick="showTab('addchar')">캐릭터 퀴즈 추가</div>
     <div class="tab" onclick="showTab('list')">목록 관리</div>
     <div class="tab" onclick="showTab('export')">내보내기</div>
     <div class="tab" onclick="showTab('guide')">가이드</div>
@@ -184,7 +185,65 @@
     </div>
   </div>
 
-  <!-- 목록 관리 탭 -->
+  <!-- 캐릭터 퀴즈 추가 탭 -->
+  <div id="tab-addchar" style="display:none;">
+    <div class="card">
+      <h2>캐릭터 퀴즈 추가</h2>
+      <div class="row">
+        <div class="field">
+          <label>시리즈명 (예: 원피스, 나루토)</label>
+          <input type="text" id="charSeries" placeholder="원피스" list="seriesList">
+          <datalist id="seriesList"></datalist>
+        </div>
+        <div class="field">
+          <label>캐릭터 이름 (정답, 여러 개면 쉼표)</label>
+          <input type="text" id="charAnswer" placeholder="루피, 몽키D루피">
+        </div>
+      </div>
+      <div class="field">
+        <label>이미지</label>
+        <div class="img-tab-btns">
+          <div class="img-tab-btn active" onclick="switchCharImgTab('url')">URL 입력</div>
+          <div class="img-tab-btn" onclick="switchCharImgTab('paste')">클립보드 붙여넣기</div>
+          <div class="img-tab-btn" onclick="switchCharImgTab('file')">파일 선택</div>
+        </div>
+        <div class="img-input-area active" id="char-img-url">
+          <input type="text" id="charFilename" placeholder="예) 루피.png (GitHub anime 폴더 파일명)" oninput="updateCharPreviewFromUrl()">
+        </div>
+        <div class="img-input-area" id="char-img-paste">
+          <div class="field" style="margin-bottom:8px;">
+            <label>저장할 파일명</label>
+            <input type="text" id="charPasteFilename" placeholder="예) 루피.png">
+          </div>
+          <div class="paste-area" id="charPasteArea" tabindex="0"
+            onclick="this.focus()"
+            onpaste="handleCharPaste(event)">
+            클릭 후 Ctrl+V 로 이미지 붙여넣기
+          </div>
+        </div>
+        <div class="img-input-area" id="char-img-file">
+          <div class="field" style="margin-bottom:8px;">
+            <label>저장할 파일명</label>
+            <input type="text" id="charFileFilename" placeholder="예) 루피.png">
+          </div>
+          <input type="file" id="charFileInput" accept="image/*" onchange="handleCharFileSelect(event)">
+        </div>
+        <div class="preview-wrap" style="margin-top:12px;">
+          <img id="charPreviewImg" class="preview-img" alt="미리보기">
+          <div class="preview-placeholder" id="charPreviewPlaceholder">이미지 미리보기</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>힌트</label>
+        <input type="text" id="charHint" placeholder="예) 밀짚모자 선장">
+      </div>
+      <button class="btn btn-primary" onclick="addCharQuiz()">추가하기</button>
+    </div>
+    <div class="card">
+      <h2>등록된 시리즈</h2>
+      <div id="seriesListDisplay" class="quiz-list"></div>
+    </div>
+  </div>
   <div id="tab-list" style="display:none;">
     <div class="card">
       <h2>퀴즈 목록 <span class="badge" id="totalCount">0</span></h2>
@@ -340,8 +399,11 @@ var DOMAIN = "https://fatbot.pe.kr";
 var currentImgUrl = "";
 var currentImgBase64 = "";
 var currentImgType = "url";
+var currentCharImgUrl = "";
+var currentCharImgBase64 = "";
+var currentCharImgType = "url";
 
-var db = { anime: [], drama: [], movie: [] };
+var db = { anime: [], drama: [], movie: [], characters: {} };
 
 function saveGhSettings() {
   localStorage.setItem("gh_token",  document.getElementById("ghToken").value);
@@ -411,7 +473,7 @@ function uploadAll() {
   var cfg = getGhConfig();
   if (!cfg.token) { showToast("설정 탭에서 Token을 먼저 입력해주세요!"); return; }
   setStatus("업로드 시작..."); setProgress(0, "준비 중...");
-  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime, characters: db.characters }, null, 2);
   uploadFile(cfg, "quiz.json", jsonContent, "quiz.json 업데이트")
     .then(function(r) {
       if (!r.ok) throw new Error("quiz.json 업로드 실패");
@@ -426,7 +488,7 @@ function uploadJsonOnly() {
   var cfg = getGhConfig();
   if (!cfg.token) { showToast("설정 탭에서 Token을 먼저 입력해주세요!"); return; }
   setStatus("JSON 업로드 중...");
-  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime, characters: db.characters }, null, 2);
   uploadFile(cfg, "quiz.json", jsonContent, "quiz.json 업데이트")
     .then(function(r) {
       if (!r.ok) throw new Error("실패");
@@ -464,9 +526,10 @@ function uploadHtmlFiles(cfg) {
 function loadDb() {
   var saved = localStorage.getItem("quizManagerDb");
   if (saved) { try { db = JSON.parse(saved); } catch(e) {} }
-  if (!db.anime)  db.anime  = [];
-  if (!db.drama)  db.drama  = [];
-  if (!db.movie)  db.movie  = [];
+  if (!db.anime)      db.anime      = [];
+  if (!db.drama)      db.drama      = [];
+  if (!db.movie)      db.movie      = [];
+  if (!db.characters) db.characters = {};
 }
 
 function saveDb() {
@@ -709,18 +772,8 @@ function deleteQuiz(id) {
 }
 
 function exportJson() {
-  var exportDb = {
-    drama: db.drama,
-    movie: db.movie,
-    anime: db.anime.map(function(item) {
-      if (item.img && item.img.startsWith("data:")) {
-        return Object.assign({}, item, { img: "[BASE64_IMAGE_" + item.id + "]" });
-      }
-      return item;
-    })
-  };
-  var json = JSON.stringify(exportDb, null, 2);
-  document.getElementById("jsonOutput").textContent = json;
+  var out = { drama: db.drama, movie: db.movie, anime: db.anime, characters: db.characters };
+  document.getElementById("jsonOutput").textContent = JSON.stringify(out, null, 2);
 }
 
 function copyJson() {
@@ -776,9 +829,10 @@ function importJson() {
   if (!json) return;
   try {
     var data = JSON.parse(json);
-    if (data.anime) db.anime = data.anime;
-    if (data.drama) db.drama = data.drama;
-    if (data.movie) db.movie = data.movie;
+    if (data.anime)      db.anime      = data.anime;
+    if (data.drama)      db.drama      = data.drama;
+    if (data.movie)      db.movie      = data.movie;
+    if (data.characters) db.characters = data.characters;
     saveDb(); renderList();
     showToast("복원 완료!");
   } catch(e) { alert("JSON 형식이 올바르지 않습니다."); }
@@ -791,14 +845,213 @@ function clearAll() {
   showToast("초기화 완료");
 }
 
+function switchCharImgTab(type) {
+  currentCharImgType = type;
+  document.querySelectorAll("#tab-addchar .img-tab-btn").forEach(function(el, i) {
+    el.classList.toggle("active", ["url","paste","file"][i] === type);
+  });
+  document.querySelectorAll("#tab-addchar .img-input-area").forEach(function(el) { el.classList.remove("active"); });
+  document.getElementById("char-img-" + type).classList.add("active");
+  currentCharImgUrl = ""; currentCharImgBase64 = "";
+}
+
+function updateCharPreviewFromUrl() {
+  var filename = document.getElementById("charFilename").value.trim();
+  if (!filename) { document.getElementById("charPreviewImg").style.display = "none"; document.getElementById("charPreviewPlaceholder").style.display = "flex"; return; }
+  var url = GITHUB_BASE + encodeFilename(filename);
+  currentCharImgUrl = url; currentCharImgBase64 = "";
+  var img = document.getElementById("charPreviewImg");
+  img.src = url; img.style.display = "block";
+  document.getElementById("charPreviewPlaceholder").style.display = "none";
+}
+
+function handleCharPaste(e) {
+  var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf("image") !== -1) {
+      var blob = items[i].getAsFile();
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        currentCharImgBase64 = ev.target.result; currentCharImgUrl = "";
+        var img = document.getElementById("charPreviewImg");
+        img.src = ev.target.result; img.style.display = "block";
+        document.getElementById("charPreviewPlaceholder").style.display = "none";
+        document.getElementById("charPasteArea").textContent = "이미지 붙여넣기 완료!";
+      };
+      reader.readAsDataURL(blob);
+      e.preventDefault(); return;
+    }
+  }
+}
+
+function handleCharFileSelect(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    currentCharImgBase64 = ev.target.result; currentCharImgUrl = "";
+    var img = document.getElementById("charPreviewImg");
+    img.src = ev.target.result; img.style.display = "block";
+    document.getElementById("charPreviewPlaceholder").style.display = "none";
+  };
+  reader.readAsDataURL(file);
+}
+
+function getNextCharId(series) {
+  if (!db.characters[series] || db.characters[series].length === 0) return 1;
+  return Math.max.apply(null, db.characters[series].map(function(x) { return x.id; })) + 1;
+}
+
+function addCharQuiz() {
+  var series    = document.getElementById("charSeries").value.trim();
+  var answerRaw = document.getElementById("charAnswer").value.trim();
+  var hint      = document.getElementById("charHint").value.trim();
+  var pasteFilename = document.getElementById("charPasteFilename") ? document.getElementById("charPasteFilename").value.trim() : "";
+  var fileFilename  = document.getElementById("charFileFilename")  ? document.getElementById("charFileFilename").value.trim()  : "";
+  var uploadFilename = (currentCharImgType === "paste" ? pasteFilename : fileFilename);
+
+  var imgUrl = currentCharImgUrl || currentCharImgBase64;
+  if (currentCharImgType === "url") {
+    var fn = document.getElementById("charFilename").value.trim();
+    imgUrl = fn ? GITHUB_BASE + encodeFilename(fn) : "";
+  }
+
+  if (!series)    { showToast("시리즈명을 입력해주세요!"); return; }
+  if (!imgUrl)    { showToast("이미지를 추가해주세요!"); return; }
+  if (!answerRaw) { showToast("캐릭터 이름(정답)을 입력해주세요!"); return; }
+  if (!hint)      { showToast("힌트를 입력해주세요!"); return; }
+  if (currentCharImgBase64 && !uploadFilename) { showToast("저장할 파일명을 입력해주세요!"); return; }
+
+  var answers = answerRaw.split(",").map(function(a) { return a.trim(); }).filter(Boolean);
+  var id = getNextCharId(series);
+
+  function doAddChar(finalImgUrl) {
+    if (!db.characters[series]) db.characters[series] = [];
+    db.characters[series].push({ id: id, img: finalImgUrl, answer: answers, hint: hint });
+    saveDb();
+
+    document.getElementById("charSeries").value = "";
+    document.getElementById("charAnswer").value = "";
+    document.getElementById("charHint").value   = "";
+    document.getElementById("charFilename").value = "";
+    if (document.getElementById("charPasteFilename")) document.getElementById("charPasteFilename").value = "";
+    if (document.getElementById("charFileFilename"))  document.getElementById("charFileFilename").value  = "";
+    document.getElementById("charPasteArea").textContent = "클릭 후 Ctrl+V 로 이미지 붙여넣기";
+    currentCharImgUrl = ""; currentCharImgBase64 = "";
+    document.getElementById("charPreviewImg").style.display = "none";
+    document.getElementById("charPreviewPlaceholder").style.display = "flex";
+    renderSeriesList();
+    updateSeriesDatalist();
+
+    var cfg = getGhConfig();
+    if (!cfg.token) { showToast("추가 완료! (Token 미설정 - 수동 업로드 필요)"); return; }
+
+    showToast("GitHub 업로드 중...");
+    var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime, characters: db.characters }, null, 2);
+    var newItem = db.characters[series][db.characters[series].length - 1];
+    var htmlContent = generateCharHtml(newItem, series);
+    var encodedSeries = series.split("").map(function(ch) { return ch.charCodeAt(0) > 127 ? encodeURIComponent(ch) : ch; }).join("");
+
+    uploadFile(cfg, "quiz.json", jsonContent, "캐릭터 추가 [" + series + "] #" + id)
+      .then(function(r) {
+        if (!r.ok) throw new Error("JSON 업로드 실패");
+        return uploadFile(cfg, "quiz/character/" + encodedSeries + "/" + id + ".html", htmlContent, "캐릭터 HTML [" + series + "] #" + id);
+      })
+      .then(function(r) {
+        if (!r.ok) throw new Error("HTML 업로드 실패");
+        showToast("✅ 캐릭터 추가 완료! [" + series + "] ID: " + id);
+      })
+      .catch(function(e) { showToast("⚠️ 업로드 실패: " + e.message); });
+  }
+
+  if (currentCharImgBase64 && uploadFilename) {
+    var cfg2 = getGhConfig();
+    if (!cfg2.token) { showToast("Token이 없어 이미지 업로드 불가!"); return; }
+    var base64Data = currentCharImgBase64.split(",")[1];
+    var imgPath = "anime/" + uploadFilename;
+    showToast("이미지 업로드 중...");
+    getFileSha(cfg2, imgPath).then(function(sha) {
+      var body = { message: "이미지 추가: " + uploadFilename, content: base64Data, branch: cfg2.branch };
+      if (sha) body.sha = sha;
+      return fetch("https://api.github.com/repos/" + cfg2.repo + "/contents/" + imgPath, {
+        method: "PUT",
+        headers: { "Authorization": "token " + cfg2.token, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    }).then(function(r) {
+      if (!r.ok) throw new Error("이미지 업로드 실패");
+      var encodedName = uploadFilename.split("").map(function(ch) { return ch.charCodeAt(0) > 127 ? encodeURIComponent(ch) : ch; }).join("");
+      doAddChar("https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/anime/" + encodedName);
+    }).catch(function(e) { showToast("❌ " + e.message); });
+  } else {
+    doAddChar(imgUrl);
+  }
+}
+
+function generateCharHtml(item, series) {
+  return '<!DOCTYPE html>\n<html lang="ko">\n<head>\n' +
+    '<meta charset="UTF-8">\n' +
+    '<meta property="og:title" content="캐릭터 퀴즈! [' + series + ']">\n' +
+    '<meta property="og:description" content="힌트: ' + item.hint + ' | !캐릭터정답 [이름]">\n' +
+    '<meta property="og:image" content="' + item.img + '">\n' +
+    '<meta property="og:image:width" content="600">\n' +
+    '<meta property="og:image:height" content="400">\n' +
+    '<meta property="og:type" content="website">\n' +
+    '<meta name="twitter:card" content="summary_large_image">\n' +
+    '<meta name="twitter:image" content="' + item.img + '">\n' +
+    '<title>캐릭터 퀴즈 [' + series + ']</title>\n' +
+    '<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#f0f0f0;user-select:none;-webkit-user-select:none;}h2{color:#333;margin-bottom:6px;}h3{color:#666;font-size:14px;margin-bottom:16px;}img{width:100%;border-radius:12px;display:block;pointer-events:none;-webkit-user-drag:none;}.hint{background:#fff3cd;padding:12px 16px;border-radius:8px;font-size:15px;margin-top:14px;}.box{background:white;padding:16px;border-radius:12px;margin-top:14px;line-height:1.8;}strong{color:#e74c3c;font-size:16px;}</style>\n' +
+    '<script>document.addEventListener("contextmenu",function(e){e.preventDefault();});document.addEventListener("keydown",function(e){if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&(e.keyCode===73||e.keyCode===74||e.keyCode===67))||(e.ctrlKey&&(e.keyCode===85||e.keyCode===83))){e.preventDefault();}});document.addEventListener("selectstart",function(e){e.preventDefault();});setInterval(function(){if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){document.body.innerHTML="<div style=\'text-align:center;padding:80px;font-size:18px\'>개발자 도구를 닫아주세요.</div>";}},1000);<\/script>\n' +
+    '</head>\n<body>\n' +
+    '<h2>캐릭터 퀴즈!</h2>\n' +
+    '<h3>[' + series + ']</h3>\n' +
+    '<img src="' + item.img + '" alt="캐릭터 이미지">\n' +
+    '<div class="hint">힌트: ' + item.hint + '</div>\n' +
+    '<div class="box">카카오톡 채팅방에서<br><strong>!캐릭터정답 [이름]</strong> 으로 답하세요!<br>정답 시 10P 지급 / 5분 제한</div>\n' +
+    '</body>\n</html>';
+}
+
+function renderSeriesList() {
+  var el = document.getElementById("seriesListDisplay");
+  var keys = Object.keys(db.characters);
+  if (keys.length === 0) { el.innerHTML = '<div class="empty">등록된 시리즈가 없습니다.</div>'; return; }
+  var html = "";
+  keys.forEach(function(s) {
+    html += '<div class="quiz-item">' +
+      '<div class="num">' + db.characters[s].length + '</div>' +
+      '<div class="info"><div class="title">' + s + '</div><div class="sub">' + db.characters[s].length + '개 캐릭터</div></div>' +
+      '<div class="actions"><button class="btn btn-danger btn-sm" onclick="deleteSeries(\'' + s + '\')">삭제</button></div>' +
+      '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function deleteSeries(s) {
+  if (!confirm("[" + s + "] 시리즈 전체를 삭제하시겠습니까?")) return;
+  delete db.characters[s];
+  saveDb(); renderSeriesList(); updateSeriesDatalist();
+  showToast("[" + s + "] 삭제 완료");
+}
+
+function updateSeriesDatalist() {
+  var dl = document.getElementById("seriesList");
+  if (!dl) return;
+  dl.innerHTML = "";
+  Object.keys(db.characters).forEach(function(s) {
+    var opt = document.createElement("option");
+    opt.value = s;
+    dl.appendChild(opt);
+  });
+}
+
 function showTab(name) {
-  ["add","list","export","guide","settings"].forEach(function(t) {
+  ["add","addchar","list","export","guide","settings"].forEach(function(t) {
     document.getElementById("tab-" + t).style.display = t === name ? "block" : "none";
   });
   document.querySelectorAll(".tab").forEach(function(el, i) {
-    el.classList.toggle("active", ["add","list","export","guide","settings"][i] === name);
+    el.classList.toggle("active", ["add","addchar","list","export","guide","settings"][i] === name);
   });
   if (name === "list") renderList();
+  if (name === "addchar") { renderSeriesList(); updateSeriesDatalist(); }
 }
 
 function changePw() {

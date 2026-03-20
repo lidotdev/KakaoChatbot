@@ -124,7 +124,7 @@
     },
     {
       "id": 16,
-      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%82%AC%EC%B0%A8%EC%9B%90%ED%83%90%EC%A0%95%EB%98%A5%EB%B9%84.png",
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%82%AC%EC%B0%A8%EC%9B%90%ED%83%90%EC%A0%95%EB%98%98%EB%B9%84.png",
       "answer": [
         "사차원탐정똘비"
       ],
@@ -196,7 +196,7 @@
     },
     {
       "id": 25,
-      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%A0%84%EC%84%A4%EC%9D%98%EB%A7%88%EB%B2%95%EC%BF%A8%EB%A3%A8%EC%BF%A8%EB%A3%A8.png",
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%A0%84%EC%84%A4%EC%9D%98%EB%A7%88%EB%B2%95%EC%BF%A0%EB%A3%A8%EC%BF%A0%EB%A3%A8.png",
       "answer": [
         "전설의마법쿠루쿠루"
       ],
@@ -220,7 +220,7 @@
     },
     {
       "id": 28,
-      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%83%B1%EA%B5%AC%EC%99%80%EC%9A%B8%EB%9D%BC%EC%88%AD.png",
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%83%B1%EA%B5%AC%EC%99%80%EC%9A%B8%EB%9D%BC%EC%88%91.png",
       "answer": [
         "탱구와울라숑"
       ],
@@ -242,5 +242,6 @@
       ],
       "hint": "팔이늘어나는"
     }
-  ]
+  ],
+  "characters": {}
 }
