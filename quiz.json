@@ -2,35 +2,155 @@
   "drama": [],
   "movie": [],
   "anime": [
-    {"id":1,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EA%B4%B4%EC%A7%9C%EA%B0%80%EC%A1%B1.png","answer":["괴짜가족"],"hint":"지극히평범한"},
-    {"id":2,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EA%BC%AC%EB%A7%88%EB%A7%88%EB%B2%95%EC%82%AC%EB%A0%88%EB%AF%B8.png","answer":["꼬마마법사레미"],"hint":"계이름"},
-    {"id":3,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EA%BC%AC%EB%B9%84%EA%BC%AC%EB%B9%84.png","answer":["꼬비꼬비"],"hint":"도깨비"},
-    {"id":4,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%82%B4%EC%B9%9C%EA%B5%AC%EC%95%84%EC%84%9C.png","answer":["내친구아서"],"hint":"친구"},
-    {"id":5,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%8D%B0%EB%B8%94%ED%8C%8C%EC%9D%B4%ED%84%B0.png","answer":["데블파이터"],"hint":"악마"},
-    {"id":6,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%94%94%EC%A7%80%EB%AA%AC%EC%84%B8%EC%9D%B4%EB%B2%84%EC%A6%88.png","answer":["디지몬세이버즈"],"hint":"디지몬"},
-    {"id":7,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%9A%9C%EC%B9%98%EC%99%80%EB%BF%8C%EA%BE%B8.png","answer":["뚜치와뿌꾸"],"hint":"한치두치"},
-    {"id":8,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%A7%88%EC%9D%B4%ED%8A%B8%EA%B0%80%EC%9D%B8.png","answer":["마이트가인"],"hint":"정의와 희망이 태풍을부른다"},
-    {"id":9,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%AA%AC%EC%8A%A4%ED%84%B0%ED%8C%9C.png","answer":["몬스터팜"],"hint":"농장"},
-    {"id":10,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%AC%B4%EC%A0%81%EC%BA%A1%ED%8B%B4%EC%82%AC%EC%9A%B0%EB%A5%B4%EC%8A%A4.png","answer":["무적캡틴사우르스"],"hint":"학교가 갈라지고"},
-    {"id":11,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%AC%B4%EC%A0%81%EC%BD%94%ED%84%B8%EB%B3%B4%EB%B3%B4%EB%B3%B4.png","answer":["무적코털보보보"],"hint":"좀더강하게"},
-    {"id":12,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%B0%94%EC%9A%B0%EC%99%80%EC%9A%B0.png","answer":["바우와우"],"hint":"ㅂㅇㅇㅇ"},
-    {"id":13,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%B0%A9%EA%B0%80%EB%B0%A9%EA%B0%80%ED%96%84%ED%86%A0%EB%A6%AC.png","answer":["방가방가햄토리"],"hint":"햄"},
-    {"id":14,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%B0%B0%EC%B6%94%EB%8F%84%EC%82%AC%EB%AC%B4%EB%8F%84%EC%82%AC.png","answer":["배추도사무도사"],"hint":"야채인간"},
-    {"id":15,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%82%AC%EB%9E%91%EC%9D%80%EC%BD%A9%EB%8B%A4%EC%BD%A9.png","answer":["사랑은콩다콩"],"hint":"쫑아"},
-    {"id":16,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%82%AC%EC%B0%A8%EC%9B%90%ED%83%90%EC%A0%95%EB%98%�%EB%B9%84.png","answer":["사차원탐정똘비"],"hint":"탐정"},
-    {"id":17,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%8A%88%ED%8D%BC%EA%B0%A4%EC%A6%88.png","answer":["슈퍼갤즈"],"hint":"자나깨나"},
-    {"id":18,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%8B%A0%EB%B9%84%ED%95%9C%EB%B0%94%EB%8B%A4%EC%9D%98%EB%82%98%EB%94%94%EC%95%84.png","answer":["신비한바다의나디아"],"hint":"바다"},
-    {"id":19,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%8B%A0%EB%B9%84%ED%95%9C%EB%B3%84%EC%9D%98%EC%8C%8D%EB%91%A5%EC%9D%B4%EA%B3%B5%EC%A3%BC.png","answer":["신비한별의쌍둥이공주"],"hint":"일단은공주니까"},
-    {"id":20,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%95%84%EA%B8%B0%EC%99%80%EB%82%98.png","answer":["아기와나"],"hint":"진이와신이"},
-    {"id":21,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%98%81%EC%8B%AC%EC%9D%B4.png","answer":["영심이"],"hint":"ㅋㅋ"},
-    {"id":22,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%9A%94%EC%88%A0%EA%B3%B5%EC%A3%BC%EB%B0%8D%ED%82%A4.png","answer":["요술공주밍키"],"hint":"0000 00~ 00~ 00~"},
-    {"id":23,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%9B%A8%EB%94%A9%ED%94%BC%EC%B9%98.png","answer":["웨딩피치"],"hint":"복숭아"},
-    {"id":24,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%9C%A0%EB%8B%88%EB%AF%B8%EB%8B%88%ED%8E%AB.png","answer":["유니미니펫"],"hint":"작아"},
-    {"id":25,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%A0%84%EC%84%A4%EC%9D%98%EB%A7%88%EB%B2%95%EC%BF%A8%EB%A3%A8%EC%BF%A8%EB%A3%A8.png","answer":["전설의마법쿠루쿠루"],"hint":"북북춤"},
-    {"id":26,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%A0%84%EC%84%A4%EC%9D%98%EC%9A%A9%EC%82%AC%EB%8B%A4%EA%B0%84.png","answer":["전설의용사다간"],"hint":"전설의"},
-    {"id":27,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%81%90%EB%B9%85%EC%8A%A4.png","answer":["큐빅스"],"hint":"부메랑"},
-    {"id":28,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%83%B1%EA%B5%AC%EC%99%80%EC%9A%B8%EB%9D%BC%EC%88%AD.png","answer":["탱구와울라숑"],"hint":"탱태래탱탱"},
-    {"id":29,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%95%98%EC%96%80%EB%A7%88%EC%9D%8C%EB%B0%B1%EA%B5%AC.png","answer":["하얀마음백구"],"hint":"흰강아지가나오는 그것"},
-    {"id":30,"img":"https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%98%95%EC%82%AC%EA%B0%80%EC%A0%9C%ED%8A%B8.png","answer":["형사가제트"],"hint":"팔이늘어나는"}
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/괴짜가족.png",
+      "answer": ["괴짜가족"],
+      "hint": "지극히평범한"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/꼬마마법사레미.png",
+      "answer": ["꼬마마법사레미"],
+      "hint": "계이름"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/꼬비꼬비.png",
+      "answer": ["꼬비꼬비"],
+      "hint": "도깨비"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/내친구아서.png",
+      "answer": ["내친구아서"],
+      "hint": "친구"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/데블파이터.png",
+      "answer": ["데블파이터"],
+      "hint": "악마"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/디지몬세이버즈.png",
+      "answer": ["디지몬세이버즈"],
+      "hint": "디지몬"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/뚜치와뿌꾸.png",
+      "answer": ["뚜치와뿌꾸"],
+      "hint": "한치두치"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/마이트가인.png",
+      "answer": ["마이트가인"],
+      "hint": "정의와 희망이 태풍을부른다"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/몬스터팜.png",
+      "answer": ["몬스터팜"],
+      "hint": "농장"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/무적캡틴사우르스.png",
+      "answer": ["무적캡틴사우르스"],
+      "hint": "학교가 갈라지고"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/무적코털보보보.png",
+      "answer": ["무적코털보보보"],
+      "hint": "좀더강하게"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/바우와우.png",
+      "answer": ["바우와우"],
+      "hint": "ㅂㅇㅇㅇ"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/방가방가햄토리.png",
+      "answer": ["방가방가햄토리"],
+      "hint": "햄"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/배추도사무도사.png",
+      "answer": ["배추도사무도사"],
+      "hint": "야채인간"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/사랑은콩다콩.png",
+      "answer": ["사랑은콩다콩"],
+      "hint": "쫑아"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/사차원탐정똘비.png",
+      "answer": ["사차원탐정똘비"],
+      "hint": "탐정"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/슈퍼갤즈.png",
+      "answer": ["슈퍼갤즈"],
+      "hint": "자나깨나"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/신비한바다의나디아.png",
+      "answer": ["신비한바다의나디아"],
+      "hint": "바다"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/신비한별의쌍둥이공주.png",
+      "answer": ["신비한별의쌍둥이공주"],
+      "hint": "일단은공주니까"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/아기와나.png",
+      "answer": ["아기와나"],
+      "hint": "진이와신이"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/영심이.png",
+      "answer": ["영심이"],
+      "hint": "ㅋㅋ"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/요술공주밍키.png",
+      "answer": ["요술공주밍키"],
+      "hint": "0000 00~ 00~ 00~"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/웨딩피치.png",
+      "answer": ["웨딩피치"],
+      "hint": "복숭아"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/유니미니펫.png",
+      "answer": ["유니미니펫"],
+      "hint": "작아"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/전설의마법쿠루쿠루.png",
+      "answer": ["전설의마법쿠루쿠루"],
+      "hint": "북북춤"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/전설의용사다간.png",
+      "answer": ["전설의용사다간"],
+      "hint": "전설의"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/큐빅스.png",
+      "answer": ["큐빅스"],
+      "hint": "부메랑"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/탱구와울라숑.png",
+      "answer": ["탱구와울라숑"],
+      "hint": "탱태래탱탱"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/하얀마음백구.png",
+      "answer": ["하얀마음백구"],
+      "hint": "흰강아지가나오는 그것"
+    },
+    {
+      "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/형사가제트.png",
+      "answer": ["형사가제트"],
+      "hint": "팔이늘어나는"
+    }
   ]
 }
