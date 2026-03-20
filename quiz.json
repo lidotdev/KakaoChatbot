@@ -280,6 +280,23 @@
           "미나토"
         ],
         "hint": "애비"
+      },
+      {
+        "id": 5,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%AF%B8%ED%86%A0",
+        "answer": [
+          "우즈마키미토",
+          "미토"
+        ],
+        "hint": "초대부인"
+      },
+      {
+        "id": 6,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%ED%9E%88%EB%A7%88%EC%99%80%EB%A6%AC",
+        "answer": [
+          "우즈마키히마와리"
+        ],
+        "hint": "딸내미"
       }
     ]
   }
