@@ -592,8 +592,33 @@ function addQuiz() {
   currentImgBase64 = "";
   updatePreviewDisplay("", "");
 
-  showToast("추가 완료! ID: " + id);
+  showToast("추가 중... GitHub 업로드 시작!");
   renderList();
+
+  var cfg = getGhConfig();
+  if (!cfg.token) {
+    showToast("추가 완료! (Token 미설정 - 수동 업로드 필요)");
+    return;
+  }
+
+  var newItem = db[cat][db[cat].length - 1];
+  var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+
+  uploadFile(cfg, "quiz.json", jsonContent, "퀴즈 추가 #" + id)
+    .then(function(r) {
+      if (!r.ok) throw new Error("JSON 업로드 실패");
+      if (cat === "anime") {
+        return uploadFile(cfg, "quiz/anime/" + id + ".html", generateHtml(newItem, "anime"), "퀴즈 HTML 추가 #" + id);
+      }
+      return Promise.resolve({ ok: true });
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error("HTML 업로드 실패");
+      showToast("✅ 추가 & 업로드 완료! ID: " + id);
+    })
+    .catch(function(e) {
+      showToast("⚠️ 추가됐지만 업로드 실패: " + e.message);
+    });
 }
 
 function renderList() {
