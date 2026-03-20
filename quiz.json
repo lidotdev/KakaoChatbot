@@ -297,6 +297,15 @@
           "우즈마키히마와리"
         ],
         "hint": "딸내미"
+      },
+      {
+        "id": 7,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%82%AC%EC%8A%A4%EC%BC%80",
+        "answer": [
+          "사스케",
+          "우치하사스케"
+        ],
+        "hint": "눈똑바로떠라"
       }
     ]
   }
