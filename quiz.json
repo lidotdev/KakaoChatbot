@@ -271,6 +271,15 @@
           "보루토"
         ],
         "hint": "아들내미"
+      },
+      {
+        "id": 4,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%AF%B8%EB%82%98%ED%86%A0",
+        "answer": [
+          "나미카제 미나토",
+          "미나토"
+        ],
+        "hint": "애비"
       }
     ]
   }
