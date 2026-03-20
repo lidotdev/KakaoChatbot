@@ -253,6 +253,24 @@
           "나루토"
         ],
         "hint": "주인공"
+      },
+      {
+        "id": 2,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EC%BF%A0%EC%8B%9C%EB%82%98",
+        "answer": [
+          "우즈마키쿠시나",
+          "쿠시나"
+        ],
+        "hint": "주인공어미"
+      },
+      {
+        "id": 3,
+        "img": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/%EB%B3%B4%EB%A3%A8%ED%86%A0",
+        "answer": [
+          "우즈마키보루토",
+          "보루토"
+        ],
+        "hint": "아들내미"
       }
     ]
   }
