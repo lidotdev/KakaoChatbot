@@ -208,7 +208,7 @@
           <div class="img-tab-btn" onclick="switchCharImgTab('file')">파일 선택</div>
         </div>
         <div class="img-input-area active" id="char-img-url">
-          <input type="text" id="charFilename" placeholder="예) 루피.png (GitHub anime 폴더 파일명)" oninput="updateCharPreviewFromUrl()">
+          <input type="text" id="charFilename" placeholder="예) 루피.png (GitHub character 폴더 파일명)" oninput="updateCharPreviewFromUrl()">
         </div>
         <div class="img-input-area" id="char-img-paste">
           <div class="field" style="margin-bottom:8px;">
@@ -873,7 +873,7 @@ function switchCharImgTab(type) {
 function updateCharPreviewFromUrl() {
   var filename = document.getElementById("charFilename").value.trim();
   if (!filename) { document.getElementById("charPreviewImg").style.display = "none"; document.getElementById("charPreviewPlaceholder").style.display = "flex"; return; }
-  var url = getGithubBase(document.getElementById('addCat') ? document.getElementById('addCat').value : 'anime') + encodeFilename(filename);
+  var url = "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/character/" + encodeFilename(filename);
   currentCharImgUrl = url; currentCharImgBase64 = "";
   var img = document.getElementById("charPreviewImg");
   img.src = url; img.style.display = "block";
@@ -927,7 +927,7 @@ function addCharQuiz() {
   var imgUrl = currentCharImgUrl || currentCharImgBase64;
   if (currentCharImgType === "url") {
     var fn = document.getElementById("charFilename").value.trim();
-    var _catC = document.getElementById('addCat').value; imgUrl = fn ? getGithubBase(_catC) + encodeFilename(fn) : "";
+    imgUrl = fn ? "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/character/" + encodeFilename(fn) : "";
   }
 
   if (!series)    { showToast("시리즈명을 입력해주세요!"); return; }
@@ -982,10 +982,10 @@ function addCharQuiz() {
     var cfg2 = getGhConfig();
     if (!cfg2.token) { showToast("Token이 없어 이미지 업로드 불가!"); return; }
     var base64Data = currentCharImgBase64.split(",")[1];
-    var imgPath = "anime/" + uploadFilename;
+    var imgPath = "character/" + uploadFilename;
     showToast("이미지 업로드 중...");
     getFileSha(cfg2, imgPath).then(function(sha) {
-      var body = { message: "이미지 추가: " + uploadFilename, content: base64Data, branch: cfg2.branch };
+      var body = { message: "캐릭터 이미지 추가: " + uploadFilename, content: base64Data, branch: cfg2.branch };
       if (sha) body.sha = sha;
       return fetch("https://api.github.com/repos/" + cfg2.repo + "/contents/" + imgPath, {
         method: "PUT",
@@ -995,7 +995,7 @@ function addCharQuiz() {
     }).then(function(r) {
       if (!r.ok) throw new Error("이미지 업로드 실패");
       var encodedName = uploadFilename.split("").map(function(ch) { return ch.charCodeAt(0) > 127 ? encodeURIComponent(ch) : ch; }).join("");
-      doAddChar("https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/anime/" + encodedName);
+      doAddChar("https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/character/" + encodedName);
     }).catch(function(e) { showToast("❌ " + e.message); });
   } else {
     doAddChar(imgUrl);
