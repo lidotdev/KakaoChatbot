@@ -247,16 +247,33 @@
   <div id="tab-list" style="display:none;">
     <div class="card">
       <h2>퀴즈 목록 <span class="badge" id="totalCount">0</span></h2>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <select id="filterCat" onchange="renderList()" style="width:auto;min-width:120px;">
-          <option value="all">전체</option>
-          <option value="anime">만화/애니</option>
-          <option value="drama">드라마</option>
-          <option value="movie">영화</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="정답 또는 힌트 검색..." oninput="renderList()" style="flex:1;">
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="btn btn-primary" id="listSubTab-quiz" onclick="switchListTab('quiz')">📺 퀴즈</button>
+        <button class="btn" id="listSubTab-char" onclick="switchListTab('char')" style="background:#f5f5f5;color:#111;border:1.5px solid #ddd;">🎭 캐릭터</button>
       </div>
-      <div class="quiz-list" id="quizList"></div>
+
+      <div id="listSection-quiz">
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <select id="filterCat" onchange="renderList()" style="width:auto;min-width:120px;">
+            <option value="all">전체</option>
+            <option value="anime">만화/애니</option>
+            <option value="drama">드라마</option>
+            <option value="movie">영화</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="정답 또는 힌트 검색..." oninput="renderList()" style="flex:1;">
+        </div>
+        <div class="quiz-list" id="quizList"></div>
+      </div>
+
+      <div id="listSection-char" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <select id="filterSeries" onchange="renderCharList()" style="width:auto;min-width:120px;">
+            <option value="all">전체 시리즈</option>
+          </select>
+          <input type="text" id="searchCharInput" placeholder="캐릭터 이름 또는 힌트 검색..." oninput="renderCharList()" style="flex:1;">
+        </div>
+        <div class="quiz-list" id="charList"></div>
+      </div>
     </div>
   </div>
 
@@ -1025,8 +1042,85 @@ function generateCharHtml(item, series) {
     '</body>\n</html>';
 }
 
+function switchListTab(tab) {
+  var isQuiz = tab === "quiz";
+  document.getElementById("listSection-quiz").style.display = isQuiz ? "block" : "none";
+  document.getElementById("listSection-char").style.display = isQuiz ? "none" : "block";
+  document.getElementById("listSubTab-quiz").className = isQuiz ? "btn btn-primary" : "btn";
+  document.getElementById("listSubTab-char").className = isQuiz ? "btn" : "btn btn-primary";
+  if (isQuiz) renderList();
+  else { updateSeriesFilterSelect(); renderCharList(); }
+}
+
+function updateSeriesFilterSelect() {
+  var sel = document.getElementById("filterSeries");
+  if (!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="all">전체 시리즈</option>';
+  Object.keys(db.characters).forEach(function(s) {
+    var opt = document.createElement("option");
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+function renderCharList() {
+  var el      = document.getElementById("charList");
+  var series  = document.getElementById("filterSeries").value;
+  var search  = document.getElementById("searchCharInput").value.toLowerCase();
+  var list    = [];
+
+  var keys = series === "all" ? Object.keys(db.characters) : [series];
+  keys.forEach(function(s) {
+    if (!db.characters[s]) return;
+    db.characters[s].forEach(function(item) {
+      list.push({ series: s, item: item });
+    });
+  });
+
+  if (search) {
+    list = list.filter(function(e) {
+      var ansMatch = e.item.answer.some(function(a) { return a.toLowerCase().indexOf(search) !== -1; });
+      var hintMatch = (e.item.hint||"").toLowerCase().indexOf(search) !== -1;
+      var seriesMatch = e.series.toLowerCase().indexOf(search) !== -1;
+      return ansMatch || hintMatch || seriesMatch;
+    });
+  }
+
+  document.getElementById("totalCount").textContent = list.length;
+
+  if (list.length === 0) { el.innerHTML = '<div class="empty">캐릭터가 없습니다.</div>'; return; }
+
+  var html = "";
+  list.forEach(function(e) {
+    var item = e.item;
+    var imgThumb = item.img ? '<img src="' + item.img + '" style="width:48px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0;">' : '<div style="width:48px;height:48px;background:#eee;border-radius:6px;flex-shrink:0;"></div>';
+    html += '<div class="quiz-item">' +
+      imgThumb +
+      '<div class="info" style="flex:1;min-width:0;">' +
+        '<div class="title">[' + e.series + '] ' + item.answer[0] + '</div>' +
+        '<div class="sub">힌트: ' + (item.hint||'-') + ' | ID: ' + item.id + '</div>' +
+      '</div>' +
+      '<div class="actions">' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteChar(\'' + e.series + '\',' + item.id + ')">삭제</button>' +
+      '</div>' +
+    '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function deleteChar(series, id) {
+  if (!confirm("[" + series + "] ID:" + id + " 캐릭터를 삭제하시겠습니까?")) return;
+  db.characters[series] = db.characters[series].filter(function(c) { return c.id !== id; });
+  if (db.characters[series].length === 0) delete db.characters[series];
+  saveDb(); renderCharList(); updateSeriesFilterSelect(); updateSeriesDatalist();
+  showToast("캐릭터 삭제 완료");
+}
+
 function renderSeriesList() {
   var el = document.getElementById("seriesListDisplay");
+  if (!el) return;
   var keys = Object.keys(db.characters);
   if (keys.length === 0) { el.innerHTML = '<div class="empty">등록된 시리즈가 없습니다.</div>'; return; }
   var html = "";
@@ -1065,7 +1159,7 @@ function showTab(name) {
   document.querySelectorAll(".tab").forEach(function(el, i) {
     el.classList.toggle("active", ["add","addchar","list","export","guide","settings"][i] === name);
   });
-  if (name === "list") renderList();
+  if (name === "list") { renderList(); switchListTab("quiz"); }
   if (name === "addchar") { renderSeriesList(); updateSeriesDatalist(); }
 }
 
