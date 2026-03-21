@@ -108,7 +108,7 @@
 <div class="container">
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('add')">만화 퀴즈 추가</div>
+    <div class="tab active" onclick="showTab('add')">퀴즈 추가</div>
     <div class="tab" onclick="showTab('addchar')">캐릭터 퀴즈 추가</div>
     <div class="tab" onclick="showTab('list')">목록 관리</div>
     <div class="tab" onclick="showTab('export')">내보내기</div>
@@ -145,7 +145,7 @@
         </div>
 
         <div class="img-input-area active" id="img-url">
-          <input type="text" id="addFilename" placeholder="예) 원피스.png (GitHub anime 폴더 파일명)" oninput="updatePreviewFromUrl()">
+          <input type="text" id="addFilename" placeholder="예) 원피스.png (GitHub 카테고리 폴더 파일명)" oninput="updatePreviewFromUrl()">
         </div>
 
         <div class="img-input-area" id="img-paste">
@@ -302,10 +302,10 @@
   <div id="tab-guide" style="display:none;">
     <div class="card">
       <h2>퀴즈 추가 방법</h2>
-      <div class="step"><b>1.</b> 이미지를 GitHub <code>anime</code> 폴더에 업로드</div>
+      <div class="step"><b>1.</b> 이미지를 GitHub <code>anime</code> / <code>drama</code> / <code>movie</code> 폴더에 업로드</div>
       <div class="step"><b>2.</b> [퀴즈 추가] 탭에서 파일명, 정답, 힌트 입력 → 추가</div>
       <div class="step"><b>3.</b> [내보내기] → JSON 복사 → GitHub <code>quiz.json</code> 업데이트</div>
-      <div class="step"><b>4.</b> [내보내기] → HTML 생성 → GitHub <code>quiz/anime/[번호].html</code> 파일 생성</div>
+      <div class="step"><b>4.</b> [내보내기] → HTML 생성 → GitHub <code>quiz/[만화·드라마·영화]/[번호].html</code> 파일 생성</div>
       <div class="step"><b>5.</b> GitHub Desktop Commit → Push</div>
     </div>
     <div class="card">
@@ -394,8 +394,18 @@ if (sessionStorage.getItem(SESSION_KEY) === "1") {
 </script>
 
 <script>
-var GITHUB_BASE = "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/";
+var GITHUB_BASE_MAP = {
+  "anime": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/anime/",
+  "drama": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/drama/",
+  "movie": "https://raw.githubusercontent.com/lidotdev/KakaoChatbot/main/movie/"
+};
 var DOMAIN = "https://fatbot.pe.kr";
+
+function getGithubBase(cat) {
+  return GITHUB_BASE_MAP[cat] || GITHUB_BASE_MAP["anime"];
+}
+
+var CAT_LABEL = { "anime": "만화", "drama": "드라마", "movie": "영화" };
 var currentImgUrl = "";
 var currentImgBase64 = "";
 var currentImgType = "url";
@@ -506,14 +516,19 @@ function uploadHtmlOnly() {
 }
 
 function uploadHtmlFiles(cfg) {
-  var list = db.anime;
-  var total = list.length;
+  var allItems = [];
+  ["anime","drama","movie"].forEach(function(cat) {
+    db[cat].forEach(function(item) {
+      allItems.push({ item: item, cat: cat });
+    });
+  });
+  var total = allItems.length;
   var done = 0;
   function next(i) {
     if (i >= total) return Promise.resolve();
-    var item = list[i];
-    var content = generateHtml(item, "anime");
-    return uploadFile(cfg, "quiz/anime/" + item.id + ".html", content, "퀴즈 HTML #" + item.id)
+    var entry   = allItems[i];
+    var content = generateHtml(entry.item, entry.cat);
+    return uploadFile(cfg, "quiz/" + entry.cat + "/" + entry.item.id + ".html", content, "퀴즈 HTML #" + entry.cat + "-" + entry.item.id)
       .then(function() {
         done++;
         setProgress(Math.round((done / total) * 90) + 10, done + "/" + total + " 완료");
@@ -578,7 +593,7 @@ function switchImgTab(type) {
 function updatePreviewFromUrl() {
   var filename = document.getElementById("addFilename").value.trim();
   if (!filename) { updatePreviewDisplay("", ""); return; }
-  var url = GITHUB_BASE + encodeFilename(filename);
+  var url = getGithubBase(document.getElementById('addCat') ? document.getElementById('addCat').value : 'anime') + encodeFilename(filename);
   currentImgUrl = url;
   currentImgBase64 = "";
   updatePreviewDisplay(url, url);
@@ -641,7 +656,7 @@ function addQuiz() {
 
   if (currentImgType === "url") {
     var filename = document.getElementById("addFilename").value.trim();
-    imgUrl = filename ? GITHUB_BASE + encodeFilename(filename) : "";
+    var _cat = document.getElementById('addCat').value; imgUrl = filename ? getGithubBase(_cat) + encodeFilename(filename) : "";
   }
 
   if (!imgUrl)    { showToast("이미지를 추가해주세요!"); return; }
@@ -678,16 +693,13 @@ function addQuiz() {
     if (!cfg.token) { showToast("추가 완료! (Token 미설정 - 수동 업로드 필요)"); return; }
 
     var newItem = db[cat][db[cat].length - 1];
-    var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime }, null, 2);
+    var jsonContent = JSON.stringify({ drama: db.drama, movie: db.movie, anime: db.anime, characters: db.characters }, null, 2);
 
     showToast("GitHub 업로드 중...");
     uploadFile(cfg, "quiz.json", jsonContent, "퀴즈 추가 #" + id)
       .then(function(r) {
         if (!r.ok) throw new Error("JSON 업로드 실패");
-        if (cat === "anime") {
-          return uploadFile(cfg, "quiz/anime/" + id + ".html", generateHtml(newItem, "anime"), "퀴즈 HTML 추가 #" + id);
-        }
-        return Promise.resolve({ ok: true });
+        return uploadFile(cfg, "quiz/" + cat + "/" + id + ".html", generateHtml(newItem, cat), "퀴즈 HTML 추가 #" + id);
       })
       .then(function(r) {
         if (!r.ok) throw new Error("HTML 업로드 실패");
@@ -701,7 +713,7 @@ function addQuiz() {
     if (!cfg2.token) { showToast("Token이 없어 이미지 업로드 불가. 설정 탭에서 Token을 입력해주세요."); return; }
     showToast("이미지 업로드 중...");
     var base64Data = currentImgBase64.split(",")[1];
-    var imgPath = "anime/" + uploadFilename;
+    var imgPath = cat + "/" + uploadFilename;
     getFileSha(cfg2, imgPath).then(function(sha) {
       var body = { message: "이미지 추가: " + uploadFilename, content: base64Data, branch: cfg2.branch };
       if (sha) body.sha = sha;
@@ -715,7 +727,7 @@ function addQuiz() {
       var encodedName = uploadFilename.split("").map(function(ch) {
         return ch.charCodeAt(0) > 127 ? encodeURIComponent(ch) : ch;
       }).join("");
-      var githubImgUrl = "https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/anime/" + encodedName;
+      var githubImgUrl = "https://raw.githubusercontent.com/" + cfg2.repo + "/" + cfg2.branch + "/" + cat + "/" + encodedName;
       doAdd(githubImgUrl);
     }).catch(function(e) { showToast("❌ 이미지 업로드 실패: " + e.message); });
   } else {
@@ -786,19 +798,22 @@ function generateHtmlPreview() {
   var output = document.getElementById("htmlOutput");
   output.style.display = "block";
   var result = "";
-  db.anime.forEach(function(item) {
-    result += "=== quiz/anime/" + item.id + ".html ===\n" + generateHtml(item, "anime") + "\n\n";
+  ["anime","drama","movie"].forEach(function(cat) {
+    db[cat].forEach(function(item) {
+      result += "=== quiz/" + cat + "/" + item.id + ".html ===\n" + generateHtml(item, cat) + "\n\n";
+    });
   });
-  output.textContent = result || "애니 퀴즈가 없습니다.";
+  output.textContent = result || "퀴즈가 없습니다.";
   showToast("HTML 생성 완료!");
 }
 
 function generateHtml(item, cat) {
+  var catLabel = (CAT_LABEL && CAT_LABEL[cat]) ? CAT_LABEL[cat] : cat;
   var imgSrc = item.img;
   return '<!DOCTYPE html>\n<html lang="ko">\n<head>\n' +
     '<meta charset="UTF-8">\n' +
-    '<meta property="og:title" content="만화 퀴즈!">\n' +
-    '<meta property="og:description" content="힌트: ' + item.hint + ' | !만화정답 [제목]">\n' +
+    '<meta property="og:title" content="' + catLabel + ' 퀴즈!">\n' +
+    '<meta property="og:description" content="힌트: ' + item.hint + ' | !퀴즈정답 [제목]">\n' +
     '<meta property="og:image" content="' + imgSrc + '">\n' +
     '<meta property="og:image:width" content="600">\n' +
     '<meta property="og:image:height" content="400">\n' +
@@ -806,7 +821,7 @@ function generateHtml(item, cat) {
     '<meta property="og:url" content="' + DOMAIN + '/quiz/' + cat + '/' + item.id + '.html">\n' +
     '<meta name="twitter:card" content="summary_large_image">\n' +
     '<meta name="twitter:image" content="' + imgSrc + '">\n' +
-    '<title>만화 퀴즈</title>\n' +
+    '<title>' + catLabel + ' 퀴즈</title>\n' +
     '<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#f0f0f0;user-select:none;-webkit-user-select:none;}h2{color:#333;margin-bottom:16px;}img{width:100%;border-radius:12px;display:block;pointer-events:none;-webkit-user-drag:none;}.hint{background:#fff3cd;padding:12px 16px;border-radius:8px;font-size:15px;margin-top:14px;}.box{background:white;padding:16px;border-radius:12px;margin-top:14px;line-height:1.8;}strong{color:#e74c3c;font-size:16px;}</style>\n' +
     '<script>\n' +
     'document.addEventListener("contextmenu",function(e){e.preventDefault();});\n' +
@@ -817,10 +832,10 @@ function generateHtml(item, cat) {
     'setInterval(function(){if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){document.body.innerHTML="<div style=\'text-align:center;padding:80px;font-size:18px\'>개발자 도구를 닫아주세요.</div>";}},1000);\n' +
     '<\/script>\n' +
     '</head>\n<body>\n' +
-    '<h2>만화 퀴즈!</h2>\n' +
+    '<h2>' + catLabel + ' 퀴즈!</h2>\n' +
     '<img src="' + imgSrc + '" alt="퀴즈 이미지">\n' +
     '<div class="hint">힌트: ' + item.hint + '</div>\n' +
-    '<div class="box">카카오톡 채팅방에서<br><strong>!만화정답 [제목]</strong> 으로 답하세요!<br>정답 시 10P 지급 / 5분 제한</div>\n' +
+    '<div class="box">카카오톡 채팅방에서<br><strong>!퀴즈정답 [제목]</strong> 으로 답하세요!<br>정답 시 50~100P 지급 / 3분 제한</div>\n' +
     '</body>\n</html>';
 }
 
@@ -858,7 +873,7 @@ function switchCharImgTab(type) {
 function updateCharPreviewFromUrl() {
   var filename = document.getElementById("charFilename").value.trim();
   if (!filename) { document.getElementById("charPreviewImg").style.display = "none"; document.getElementById("charPreviewPlaceholder").style.display = "flex"; return; }
-  var url = GITHUB_BASE + encodeFilename(filename);
+  var url = getGithubBase(document.getElementById('addCat') ? document.getElementById('addCat').value : 'anime') + encodeFilename(filename);
   currentCharImgUrl = url; currentCharImgBase64 = "";
   var img = document.getElementById("charPreviewImg");
   img.src = url; img.style.display = "block";
@@ -912,7 +927,7 @@ function addCharQuiz() {
   var imgUrl = currentCharImgUrl || currentCharImgBase64;
   if (currentCharImgType === "url") {
     var fn = document.getElementById("charFilename").value.trim();
-    imgUrl = fn ? GITHUB_BASE + encodeFilename(fn) : "";
+    var _catC = document.getElementById('addCat').value; imgUrl = fn ? getGithubBase(_catC) + encodeFilename(fn) : "";
   }
 
   if (!series)    { showToast("시리즈명을 입력해주세요!"); return; }
