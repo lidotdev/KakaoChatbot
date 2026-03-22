@@ -222,7 +222,7 @@ function doSearch() {
       });
   } else {
     var promises = SERVERS.map(function(sv) {
-      return apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + (_currentServer !== 'all' ? '&server_name=' + encodeURIComponent(_currentServer) : ''))
+      return apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + '&server_name=' + encodeURIComponent(sv))
         .then(function(d) {
           if (!d.ocid) return null;
           return apiGet('/baram/v1/character/basic?ocid=' + d.ocid)
