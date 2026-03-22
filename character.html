@@ -218,7 +218,7 @@ function render(basic, stat, title, titleEq, equip, guild) {
   var lv   = basic.character_level ? 'Lv.' + basic.character_level : '-';
   var world = basic.character_nation_name || '-';
   var avatar = basic.character_image ? '<img src="' + basic.character_image + '" alt="">' : '⚔️';
-  var equippedTitle = (titleEq.title && titleEq.title.title_name) ? titleEq.title.title_name : null;
+  var equippedTitle = (titleEq && titleEq.title_id) ? titleEq.title_id : null;
 
   document.title = name + ' — FATBOT';
 
@@ -236,7 +236,7 @@ function render(basic, stat, title, titleEq, equip, guild) {
   }).join('') + '</div>';
 
   /* 능력치 패널 */
-  var stats = stat.final_stat || [];
+  var stats = stat.stat || [];
   var statHtml = stats.length > 0
     ? '<div class="stat-grid">' + stats.map(function(s) {
         return '<div class="stat-item"><span class="stat-name">' + s.stat_name + '</span><span class="stat-val">' + s.stat_value + '</span></div>';
@@ -247,10 +247,10 @@ function render(basic, stat, title, titleEq, equip, guild) {
   var titles = title.title || [];
   var titleHtml = titles.length > 0
     ? '<div class="title-list">' + titles.map(function(t) {
-        var eq = equippedTitle && t.title_name === equippedTitle;
+        var eq = equippedTitle && t.title_id === equippedTitle;
         return '<div class="title-item' + (eq ? ' equipped' : '') + '">'
           + '<span class="equipped-dot"></span>'
-          + t.title_name
+          + t.title_id
           + (eq ? '<span class="equipped-badge">장착중</span>' : '')
           + '</div>';
       }).join('') + '</div>'
@@ -260,7 +260,7 @@ function render(basic, stat, title, titleEq, equip, guild) {
   var items = equip.item_equipment || [];
   var equipHtml = items.length > 0
     ? '<div class="equip-grid">' + items.map(function(i) {
-        return '<div class="equip-item"><div class="equip-slot">' + (i.item_equipment_slot || '') + '</div><div class="equip-name">' + (i.item_name || '-') + '</div></div>';
+        return '<div class="equip-item"><div class="equip-slot">' + (i.item_equipment_slot_name || '') + '</div><div class="equip-name">' + (i.item_id || '-') + '</div></div>';
       }).join('') + '</div>'
     : '<div class="empty-msg">장착 아이템 없음</div>';
 
@@ -279,7 +279,7 @@ function render(basic, stat, title, titleEq, equip, guild) {
     +       '<span class="tag accent">' + lv + '</span>'
     +       '<span class="tag">' + (basic.character_nation_name || '') + '</span>'
     +       (guild && guild.guild_name ? '<span class="tag">' + guild.guild_name + '</span>' : '')
-    +       (equippedTitle ? '<span class="tag">' + equippedTitle + '</span>' : '')
+    +       
     +     '</div>'
     +   '</div>'
     + '</div>'
