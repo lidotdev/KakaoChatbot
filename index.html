@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FATBOT</title>
+<style>
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2'); font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2') format('woff2'); font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+
+[data-theme="dark"] {
+  --color-bg-base: #0c0d10; --color-bg-layer1: #13151a; --color-bg-layer2: #1a1d24;
+  --color-bg-layer3: #22252f; --color-bg-search: #2a2e3a;
+  --color-border-sub: #1f2228; --color-border: #23262f; --color-border-em: #2e3140;
+  --color-text-primary: #f2f2f4; --color-text-second: #8a8d99;
+  --color-text-muted: #50535e; --color-text-disabled: #383b47;
+  --color-accent: #5b8ef5; --color-accent-sub: #7c5cfc;
+  --color-accent-bg: rgba(91,142,245,0.10); --color-accent-border: rgba(91,142,245,0.30);
+  --color-accent-hover: #4a7de0; --color-danger: #f05252;
+  --color-header-bg: rgba(12,13,16,0.92); --color-header-blur: blur(16px);
+  --color-dropdown-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --color-bg-base: #f4f5f7; --color-bg-layer1: #ffffff; --color-bg-layer2: #f0f1f4;
+  --color-bg-layer3: #e4e6eb; --color-bg-search: #e2e4ea;
+  --color-border-sub: #eceef2; --color-border: #dde0e8; --color-border-em: #c8ccd8;
+  --color-text-primary: #111217; --color-text-second: #5a5e6e;
+  --color-text-muted: #9096a8; --color-text-disabled: #bbbfc9;
+  --color-accent: #3b6fe0; --color-accent-sub: #6340d0;
+  --color-accent-bg: rgba(59,111,224,0.08); --color-accent-border: rgba(59,111,224,0.25);
+  --color-accent-hover: #2a5ec8; --color-danger: #d63031;
+  --color-header-bg: rgba(244,245,247,0.92); --color-header-blur: blur(16px);
+  --color-dropdown-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--color-bg-base); color: var(--color-text-primary); font-family: 'Pretendard', -apple-system, sans-serif; font-weight: 400; min-height: 100vh; -webkit-font-smoothing: antialiased; transition: background 0.2s, color 0.2s; }
+
+.header { position: sticky; top: 0; z-index: 200; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; transition: background 0.25s, backdrop-filter 0.25s; }
+.header.scrolled { background: var(--color-header-bg); backdrop-filter: var(--color-header-blur); -webkit-backdrop-filter: var(--color-header-blur); }
+.header-top { height: 58px; display: flex; align-items: center; padding: 0 32px; gap: 12px; border-bottom: 1px solid transparent; transition: border-color 0.25s; }
+.header.scrolled .header-top { border-bottom-color: var(--color-border-sub); }
+
+.logo { font-size: 22px; font-weight: 900; letter-spacing: 3px; color: var(--color-text-primary); user-select: none; flex-shrink: 0; cursor: pointer; }
+.logo em, .search-logo em { font-style: normal; background: linear-gradient(110deg, var(--color-accent) 0%, var(--color-accent-sub) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.game-dropdown-wrap { margin-left: 12px; position: relative; }
+.game-dropdown-trigger { display: flex; align-items: center; gap: 8px; background: none; border: none; color: var(--color-text-second); font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 600; padding: 7px 8px; border-radius: 8px; cursor: pointer; transition: color 0.15s; user-select: none; }
+.game-dropdown-trigger:hover { color: var(--color-text-primary); }
+.game-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); flex-shrink: 0; }
+.chevron { width: 14px; height: 14px; fill: none; stroke: var(--color-text-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+.game-dropdown-trigger.open .chevron { transform: rotate(180deg); }
+.game-dropdown-menu { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: var(--color-bg-layer2); border: 1px solid var(--color-border-em); border-radius: 10px; min-width: 180px; box-shadow: var(--color-dropdown-shadow); overflow: hidden; z-index: 300; animation: dropIn 0.15s ease; }
+.game-dropdown-menu.open { display: block; }
+@keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.game-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-size: 13px; font-weight: 500; color: var(--color-text-second); cursor: pointer; transition: background 0.12s, color 0.12s; border: none; background: none; width: 100%; font-family: 'Pretendard', sans-serif; text-align: left; }
+.game-dropdown-item:hover { background: var(--color-bg-layer3); color: var(--color-text-primary); }
+.game-dropdown-item.active { color: var(--color-accent); font-weight: 700; }
+.item-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-border-em); flex-shrink: 0; }
+.game-dropdown-item.active .item-dot { background: var(--color-accent); }
+.item-soon { margin-left: auto; background: var(--color-bg-layer3); border: 1px solid var(--color-border-em); color: var(--color-text-muted); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+
+.theme-toggle { margin-left: auto; width: 34px; height: 34px; background: none; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.theme-toggle svg { width: 16px; height: 16px; fill: none; stroke: var(--color-text-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.theme-toggle:hover svg { stroke: var(--color-text-second); }
+
+.content { max-width: 900px; margin: 0 auto; padding: 0 32px; min-height: calc(100vh - 58px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.content.has-results { justify-content: flex-start; padding-top: 60px; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.search-outer { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.search-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+.search-logo { font-size: 34px; font-weight: 900; letter-spacing: 4px; color: var(--color-text-primary); user-select: none; cursor: pointer; }
+
+.search-row { display: flex; align-items: stretch; width: 100%; max-width: 540px; background: var(--color-bg-search); border-radius: 999px; transition: box-shadow 0.2s; position: relative; }
+.search-row:focus-within { box-shadow: 0 0 0 2px var(--color-accent); }
+
+.server-btn { display: flex; align-items: center; justify-content: center; gap: 7px; background: none; border: none; padding: 0 20px; cursor: pointer; font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 600; color: var(--color-text-second); white-space: nowrap; border-radius: 999px 0 0 999px; transition: color 0.15s; min-width: 110px; position: relative; }
+.server-btn::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 1px; height: 18px; background: var(--color-border-em); }
+.server-btn:hover { color: var(--color-text-primary); }
+.server-btn svg { width: 11px; height: 11px; fill: none; stroke: var(--color-text-muted); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+.server-dropdown { display: none; position: absolute; top: calc(100% + 8px); left: 0; border: none; border-radius: 8px; min-width: 120px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 300; overflow: hidden; animation: dropIn 0.15s ease; }
+[data-theme="dark"] .server-dropdown { background: rgba(30,33,44,0.85); }
+[data-theme="light"] .server-dropdown { background: rgba(240,241,244,0.85); }
+.server-dropdown.open { display: block; }
+.server-opt { display: block; width: 100%; background: none; border: none; padding: 9px 16px; font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 500; color: var(--color-text-second); text-align: center; cursor: pointer; transition: background 0.1s, color 0.1s; }
+.server-opt:hover { background: var(--color-bg-layer3); color: var(--color-text-primary); }
+.server-opt.active { color: var(--color-accent); font-weight: 700; }
+
+.search-input-wrap { flex: 1; display: flex; align-items: center; padding: 0 18px; }
+.search-input-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--color-text-primary); font-size: 14px; font-family: 'Pretendard', sans-serif; font-weight: 400; padding: 18px 0; }
+.search-input-wrap input::placeholder { color: var(--color-text-muted); }
+.search-btn { background: none; border: none; padding: 0 20px; cursor: pointer; display: flex; align-items: center; color: var(--color-text-muted); transition: color 0.15s; flex-shrink: 0; border-radius: 0 999px 999px 0; }
+.search-btn:hover { color: var(--color-accent); }
+.search-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+#charResults { width: 100%; margin-top: 40px; animation: fadeUp 0.25s ease; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.char-card { background: var(--color-bg-layer1); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s; }
+.char-card:hover { border-color: var(--color-accent-border); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.char-card-avatar { width: 48px; height: 48px; background: var(--color-bg-layer2); border: 1px solid var(--color-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; overflow: hidden; }
+.char-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.char-card-name { font-size: 15px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.char-card-class { font-size: 12px; color: var(--color-text-muted); margin-bottom: 8px; }
+.char-card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.char-tag { background: var(--color-bg-layer2); border: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.char-tag.lv { background: var(--color-accent-bg); border-color: var(--color-accent-border); color: var(--color-accent); }
+
+.loading-wrap { display: flex; justify-content: center; padding: 40px 0; }
+.spinner { width: 28px; height: 28px; border: 2px solid var(--color-border-em); border-top-color: var(--color-accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg { text-align: center; padding: 32px; color: var(--color-danger); font-size: 14px; }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--color-bg-layer2); border: 1px solid var(--color-border-em); color: var(--color-text-primary); font-size: 13px; font-weight: 500; padding: 10px 22px; border-radius: 20px; opacity: 0; pointer-events: none; transition: all 0.2s ease; white-space: nowrap; z-index: 9999; box-shadow: var(--color-dropdown-shadow); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.footer { border-top: 1px solid var(--color-border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+.footer-logo { font-size: 13px; font-weight: 900; letter-spacing: 2px; color: var(--color-text-muted); }
+.footer-copy { font-size: 11px; color: var(--color-text-muted); }
+</style>
+</head>
+<body>
+
+<header class="header" id="mainHeader">
+  <div class="header-top">
+    <div class="logo" onclick="location.href='/'">FAT<em>BOT</em></div>
+    <div class="game-dropdown-wrap" id="gameDropdownWrap">
+      <button class="game-dropdown-trigger" id="gameDropdownTrigger" onclick="toggleDropdown()">
+        <span class="game-dot"></span>
+        <span id="gameLabel">바람의나라</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="game-dropdown-menu" id="gameDropdownMenu">
+        <button class="game-dropdown-item active" onclick="selectGame(this,'baram','바람의나라')">
+          <span class="item-dot"></span>바람의나라
+        </button>
+        <button class="game-dropdown-item" onclick="showToast('메이플스토리는 준비 중이에요!')">
+          <span class="item-dot"></span>메이플스토리
+          <span class="item-soon">준비중</span>
+        </button>
+      </div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="content" id="mainContent">
+  <div class="search-outer">
+    <div class="search-wrap">
+      <div class="search-logo" onclick="location.href='/'">FAT<em>BOT</em></div>
+      <div class="search-row" id="searchRow">
+        <button class="server-btn" id="serverBtn" onclick="toggleServerDropdown()">
+          <span id="serverLabel">전체</span>
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="server-dropdown" id="serverDropdown">
+          <button class="server-opt active" onclick="pickServer(this,'all','전체')">전체</button>
+          <button class="server-opt" onclick="pickServer(this,'연','연')">연</button>
+          <button class="server-opt" onclick="pickServer(this,'무휼','무휼')">무휼</button>
+          <button class="server-opt" onclick="pickServer(this,'유리','유리')">유리</button>
+          <button class="server-opt" onclick="pickServer(this,'하자','하자')">하자</button>
+          <button class="server-opt" onclick="pickServer(this,'호동','호동')">호동</button>
+          <button class="server-opt" onclick="pickServer(this,'진','진')">진</button>
+        </div>
+        <div class="search-input-wrap">
+          <input type="text" id="charSearchInput" placeholder="닉네임을 입력하세요" onkeydown="if(event.key==='Enter')doSearch()">
+        </div>
+        <button class="search-btn" onclick="doSearch()">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="charResults"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer class="footer">
+  <span class="footer-logo">FATBOT</span>
+  <span class="footer-copy">Powered by NEXON Open API</span>
+</footer>
+
+<script>
+var PROXY   = 'https://morning-cherry-f26a.server-adm.workers.dev';
+var SERVERS = ['연','무휼','유리','하자','호동','진'];
+var _currentServer = 'all';
+
+window.addEventListener('scroll', function() {
+  document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+function apiGet(path) {
+  return fetch(PROXY + path).then(function(r) { return r.json(); });
+}
+
+function doSearch() {
+  var name = document.getElementById('charSearchInput').value.trim();
+  if (!name) return;
+  var results = document.getElementById('charResults');
+  var content = document.getElementById('mainContent');
+  results.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+  content.classList.add('has-results');
+
+  if (_currentServer !== 'all') {
+    apiGet('/baram/v1/character/ocid?character_name=' + encodeURIComponent(name))
+      .then(function(d) {
+        if (!d.ocid) throw new Error('캐릭터를 찾을 수 없습니다.');
+        location.href = 'character.html?ocid=' + d.ocid;
+      })
+      .catch(function(e) {
+        results.innerHTML = '<div class="error-msg">❌ ' + e.message + '</div>';
+      });
+  } else {
+    var promises = SERVERS.map(function(sv) {
+      return apiGet('/baram/v1/character/ocid?character_name=' + encodeURIComponent(name))
+        .then(function(d) {
+          if (!d.ocid) return null;
+          return apiGet('/baram/v1/character/basic?ocid=' + d.ocid)
+            .then(function(basic) {
+              basic._ocid = d.ocid;
+              basic._server = basic.world_name || sv;
+              return basic;
+            });
+        })
+        .catch(function() { return null; });
+    });
+
+    Promise.all(promises).then(function(chars) {
+      var valid = chars.filter(function(c) { return c !== null; });
+      if (valid.length === 0) {
+        results.innerHTML = '<div class="error-msg">❌ 검색 결과가 없습니다.</div>';
+        return;
+      }
+      if (valid.length === 1) {
+        location.href = 'character.html?ocid=' + valid[0]._ocid;
+        return;
+      }
+      var html = '<div class="card-grid">';
+      valid.forEach(function(c) {
+        var avatar = c.character_image ? '<img src="' + c.character_image + '" alt="">' : '⚔️';
+        html += '<div class="char-card" onclick="location.href=\'character.html?ocid=' + c._ocid + '\'">'
+          + '<div class="char-card-avatar">' + avatar + '</div>'
+          + '<div class="char-card-name">' + (c.character_name || name) + '</div>'
+          + '<div class="char-card-class">' + (c.character_class || '-') + (c.character_class_level ? ' ' + c.character_class_level + '차' : '') + '</div>'
+          + '<div class="char-card-tags">'
+          + '<span class="char-tag lv">Lv.' + (c.character_level || '-') + '</span>'
+          + '<span class="char-tag">' + c._server + '</span>'
+          + '</div></div>';
+      });
+      html += '</div>';
+      results.innerHTML = html;
+    });
+  }
+}
+
+function toggleServerDropdown() {
+  document.getElementById('serverDropdown').classList.toggle('open');
+}
+function pickServer(btn, val, label) {
+  _currentServer = val;
+  document.getElementById('serverLabel').textContent = label;
+  document.querySelectorAll('.server-opt').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('serverDropdown').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  var row = document.getElementById('searchRow');
+  if (row && !row.contains(e.target)) document.getElementById('serverDropdown').classList.remove('open');
+  var wrap = document.getElementById('gameDropdownWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('gameDropdownTrigger').classList.remove('open');
+    document.getElementById('gameDropdownMenu').classList.remove('open');
+  }
+});
+
+function toggleDropdown() {
+  document.getElementById('gameDropdownTrigger').classList.toggle('open');
+  document.getElementById('gameDropdownMenu').classList.toggle('open');
+}
+function selectGame(btn, game, label) {
+  document.querySelectorAll('.game-dropdown-item').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('gameLabel').textContent = label;
+  document.getElementById('gameDropdownTrigger').classList.remove('open');
+  document.getElementById('gameDropdownMenu').classList.remove('open');
+}
+
+var sunIcon  = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+var moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+function toggleTheme() {
+  var html = document.documentElement;
+  var isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
+  localStorage.setItem('fb-theme', isDark ? 'light' : 'dark');
+}
+(function() {
+  var saved = localStorage.getItem('fb-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    if (saved === 'light') document.getElementById('themeIcon').innerHTML = sunIcon;
+  }
+})();
+
+var _tt = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  if (_tt) clearTimeout(_tt);
+  _tt = setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+</script>
+</body>
+</html>
