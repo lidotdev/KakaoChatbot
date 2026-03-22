@@ -214,9 +214,9 @@ function render(basic, stat, title, titleEq, equip, guild) {
   document.getElementById('loadingState').style.display = 'none';
 
   var name = basic.character_name || '-';
-  var cls  = (basic.character_class || '') + (basic.character_class_level ? ' ' + basic.character_class_level + '차' : '');
+  var cls  = (basic.character_class_name || '') + (basic.character_class_level ? ' ' + basic.character_class_level + '차' : '');
   var lv   = basic.character_level ? 'Lv.' + basic.character_level : '-';
-  var world = basic.world_name || '-';
+  var world = basic.character_nation_name || '-';
   var avatar = basic.character_image ? '<img src="' + basic.character_image + '" alt="">' : '⚔️';
   var equippedTitle = (titleEq.title && titleEq.title.title_name) ? titleEq.title.title_name : null;
 
@@ -224,11 +224,11 @@ function render(basic, stat, title, titleEq, equip, guild) {
 
   /* 기본 정보 패널 */
   var basicFields = [
-    ['직업', basic.character_class || '-'],
+    ['직업', basic.character_class_name || '-'],
     ['레벨', lv],
-    ['서버', world],
+    ['나라', basic.character_nation_name || '-'],
     ['성별', basic.character_gender || '-'],
-    ['경험치', basic.character_exp_rate ? basic.character_exp_rate + '%' : '-'],
+    ['경험치', basic.character_exp ? Number(basic.character_exp).toLocaleString() : '-'],
     ['생성일', basic.character_date_create ? basic.character_date_create.substring(0,10) : '-']
   ];
   var basicHtml = '<div class="info-grid">' + basicFields.map(function(f) {
@@ -277,7 +277,7 @@ function render(basic, stat, title, titleEq, equip, guild) {
     +     '<div class="char-class">' + cls + '</div>'
     +     '<div class="tag-row">'
     +       '<span class="tag accent">' + lv + '</span>'
-    +       '<span class="tag">' + world + '</span>'
+    +       '<span class="tag">' + (basic.character_nation_name || '') + '</span>'
     +       (guild && guild.guild_name ? '<span class="tag">' + guild.guild_name + '</span>' : '')
     +       (equippedTitle ? '<span class="tag">' + equippedTitle + '</span>' : '')
     +     '</div>'

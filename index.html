@@ -237,7 +237,7 @@ function doSearch() {
             cardHtml += '<div class="char-card" onclick="location.href='character.html?ocid=' + c._ocid + ''">'
               + '<div class="char-card-avatar">' + avatar + '</div>'
               + '<div class="char-card-name">' + (c.character_name || name) + '</div>'
-              + '<div class="char-card-class">' + (c.character_class || '-') + (c.character_class_level ? ' ' + c.character_class_level + '차' : '') + '</div>'
+              + '<div class="char-card-class">' + c.character_class_name || '-' + '</div>'
               + '<div class="char-card-tags">'
               + '<span class="char-tag lv">Lv.' + (c.character_level || '-') + '</span>'
               + '<span class="char-tag">' + c._server + '</span>'
