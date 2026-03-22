@@ -221,45 +221,49 @@ function doSearch() {
         results.innerHTML = '<div class="error-msg">❌ ' + e.message + '</div>';
       });
   } else {
-    var promises = SERVERS.map(function(sv) {
-      return apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + '&server_name=' + encodeURIComponent(sv))
+    /* 전체 서버 — 순차 검색, rate limit 방지 */
+    var found = [];
+    var sidx = 0;
+    function searchNext() {
+      if (sidx >= SERVERS.length) {
+        if (found.length === 0) {
+          results.innerHTML = '<div class="error-msg">❌ 검색 결과가 없습니다.</div>';
+        } else if (found.length === 1) {
+          location.href = 'character.html?ocid=' + found[0]._ocid;
+        } else {
+          var cardHtml = '<div class="card-grid">';
+          found.forEach(function(c) {
+            var avatar = c.character_image ? '<img src="' + c.character_image + '" alt="">' : '⚔️';
+            cardHtml += '<div class="char-card" onclick="location.href='character.html?ocid=' + c._ocid + ''">'
+              + '<div class="char-card-avatar">' + avatar + '</div>'
+              + '<div class="char-card-name">' + (c.character_name || name) + '</div>'
+              + '<div class="char-card-class">' + (c.character_class || '-') + (c.character_class_level ? ' ' + c.character_class_level + '차' : '') + '</div>'
+              + '<div class="char-card-tags">'
+              + '<span class="char-tag lv">Lv.' + (c.character_level || '-') + '</span>'
+              + '<span class="char-tag">' + c._server + '</span>'
+              + '</div></div>';
+          });
+          cardHtml += '</div>';
+          results.innerHTML = cardHtml;
+        }
+        return;
+      }
+      var sv = SERVERS[sidx++];
+      apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + '&server_name=' + encodeURIComponent(sv))
         .then(function(d) {
-          if (!d.ocid) return null;
-          return apiGet('/baram/v1/character/basic?ocid=' + d.ocid)
-            .then(function(basic) {
-              basic._ocid = d.ocid;
-              basic._server = basic.world_name || sv;
-              return basic;
-            });
+          if (d.ocid) {
+            return apiGet('/baram/v1/character/basic?ocid=' + d.ocid)
+              .then(function(basic) {
+                basic._ocid = d.ocid;
+                basic._server = basic.world_name || sv;
+                found.push(basic);
+              });
+          }
         })
-        .catch(function() { return null; });
-    });
-
-    Promise.all(promises).then(function(chars) {
-      var valid = chars.filter(function(c) { return c !== null; });
-      if (valid.length === 0) {
-        results.innerHTML = '<div class="error-msg">❌ 검색 결과가 없습니다.</div>';
-        return;
-      }
-      if (valid.length === 1) {
-        location.href = 'character.html?ocid=' + valid[0]._ocid;
-        return;
-      }
-      var html = '<div class="card-grid">';
-      valid.forEach(function(c) {
-        var avatar = c.character_image ? '<img src="' + c.character_image + '" alt="">' : '⚔️';
-        html += '<div class="char-card" onclick="location.href=\'character.html?ocid=' + c._ocid + '\'">'
-          + '<div class="char-card-avatar">' + avatar + '</div>'
-          + '<div class="char-card-name">' + (c.character_name || name) + '</div>'
-          + '<div class="char-card-class">' + (c.character_class || '-') + (c.character_class_level ? ' ' + c.character_class_level + '차' : '') + '</div>'
-          + '<div class="char-card-tags">'
-          + '<span class="char-tag lv">Lv.' + (c.character_level || '-') + '</span>'
-          + '<span class="char-tag">' + c._server + '</span>'
-          + '</div></div>';
-      });
-      html += '</div>';
-      results.innerHTML = html;
-    });
+        .catch(function() {})
+        .then(function() { searchNext(); });
+    }
+    searchNext();
   }
 }
 
