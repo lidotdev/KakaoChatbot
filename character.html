@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FATBOT — 캐릭터</title>
+<style>
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+
+[data-theme="dark"] {
+  --bg: #0c0d10; --bg1: #13151a; --bg2: #1a1d24; --bg3: #22252f;
+  --border: #23262f; --border-em: #2e3140;
+  --text: #f2f2f4; --text2: #8a8d99; --text3: #50535e;
+  --accent: #5b8ef5; --accent-sub: #7c5cfc;
+  --accent-bg: rgba(91,142,245,0.10); --accent-border: rgba(91,142,245,0.30);
+  --header-bg: rgba(12,13,16,0.92);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --bg: #f4f5f7; --bg1: #ffffff; --bg2: #f0f1f4; --bg3: #e4e6eb;
+  --border: #dde0e8; --border-em: #c8ccd8;
+  --text: #111217; --text2: #5a5e6e; --text3: #9096a8;
+  --accent: #3b6fe0; --accent-sub: #6340d0;
+  --accent-bg: rgba(59,111,224,0.08); --accent-border: rgba(59,111,224,0.25);
+  --header-bg: rgba(244,245,247,0.92);
+  --shadow: 0 4px 24px rgba(0,0,0,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Pretendard', -apple-system, sans-serif; font-weight: 400; min-height: 100vh; -webkit-font-smoothing: antialiased; transition: background 0.2s, color 0.2s; }
+
+/* ── HEADER ── */
+.header { position: sticky; top: 0; z-index: 200; background: transparent; transition: background 0.25s; }
+.header.scrolled { background: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.header-inner { height: 58px; display: flex; align-items: center; padding: 0 32px; gap: 16px; border-bottom: 1px solid transparent; transition: border-color 0.25s; }
+.header.scrolled .header-inner { border-bottom-color: rgba(128,128,128,0.1); }
+.logo { font-size: 20px; font-weight: 900; letter-spacing: 3px; color: var(--text); cursor: pointer; text-decoration: none; flex-shrink: 0; }
+.logo em { font-style: normal; background: linear-gradient(110deg, var(--accent) 0%, var(--accent-sub) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.back-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: var(--text3); font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; padding: 6px 0; transition: color 0.15s; }
+.back-btn:hover { color: var(--text); }
+.back-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.theme-toggle { margin-left: auto; width: 34px; height: 34px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.theme-toggle svg { width: 16px; height: 16px; fill: none; stroke: var(--text3); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── LAYOUT ── */
+.page { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* ── LOADING / ERROR ── */
+.loading-page { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 58px); }
+.spinner { width: 32px; height: 32px; border: 2px solid var(--border-em); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 58px); gap: 12px; color: var(--text3); font-size: 14px; }
+
+/* ── PROFILE ── */
+.profile-card { background: var(--bg1); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.profile-header { padding: 28px 28px 24px; display: flex; align-items: flex-start; gap: 20px; }
+.avatar { width: 80px; height: 80px; background: var(--bg2); border: 2px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-info { flex: 1; min-width: 0; }
+.char-name { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.char-class { font-size: 14px; color: var(--text2); margin-bottom: 12px; font-weight: 400; }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { background: var(--bg2); border: 1px solid var(--border); color: var(--text2); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+.tag.accent { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent); }
+
+/* ── SECTION TABS ── */
+.sec-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 28px; background: var(--bg1); }
+.sec-tab { background: none; border: none; font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 500; color: var(--text3); padding: 12px 16px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; white-space: nowrap; }
+.sec-tab:hover { color: var(--text2); }
+.sec-tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.sec-panel { display: none; padding: 24px 28px; }
+.sec-panel.active { display: block; }
+
+/* ── INFO GRID ── */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.info-item { background: var(--bg2); border-radius: 10px; padding: 12px 14px; }
+.info-label { font-size: 11px; font-weight: 500; color: var(--text3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+.info-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+.stat-item { background: var(--bg2); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+.stat-name { font-size: 12px; color: var(--text3); }
+.stat-val { font-size: 13px; font-weight: 700; color: var(--text); }
+
+/* ── TITLE LIST ── */
+.title-list { display: flex; flex-direction: column; gap: 6px; }
+.title-item { background: var(--bg2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+.title-item.equipped { background: var(--accent-bg); color: var(--text); }
+.equipped-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+.title-item.equipped .equipped-dot { background: var(--accent); }
+.equipped-badge { margin-left: auto; background: var(--accent-bg); border: 1px solid var(--accent-border); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+
+/* ── EQUIP GRID ── */
+.equip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.equip-item { background: var(--bg2); border-radius: 8px; padding: 10px 14px; }
+.equip-slot { font-size: 10px; color: var(--text3); margin-bottom: 3px; font-weight: 500; }
+.equip-name { font-size: 13px; color: var(--text); font-weight: 500; }
+
+/* ── GUILD ── */
+.guild-card { background: var(--bg2); border-radius: 10px; padding: 18px 20px; display: flex; align-items: center; gap: 14px; }
+.guild-icon { font-size: 26px; }
+.guild-name { font-size: 17px; font-weight: 700; color: var(--text); }
+.guild-world { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+.empty-msg { color: var(--text3); font-size: 13px; padding: 20px 0; text-align: center; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg2); border: 1px solid var(--border-em); color: var(--text); font-size: 13px; font-weight: 500; padding: 10px 22px; border-radius: 20px; opacity: 0; pointer-events: none; transition: all 0.2s ease; white-space: nowrap; z-index: 9999; box-shadow: var(--shadow); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="header" id="mainHeader">
+  <div class="header-inner">
+    <a class="logo" href="/">FAT<em>BOT</em></a>
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      검색으로 돌아가기
+    </button>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="loadingState" class="loading-page"><div class="spinner"></div></div>
+<div id="errorState" class="error-page" style="display:none;">
+  <div style="font-size:32px;">⚠️</div>
+  <div id="errorMsg">캐릭터 정보를 불러올 수 없습니다.</div>
+  <button onclick="history.back()" style="margin-top:8px;background:none;border:none;color:var(--accent);font-family:'Pretendard',sans-serif;font-size:13px;cursor:pointer;">← 돌아가기</button>
+</div>
+
+<div id="mainPage" class="page" style="display:none;"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PROXY = 'https://morning-cherry-f26a.server-adm.workers.dev';
+
+window.addEventListener('scroll', function() {
+  document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+function apiGet(path) {
+  return fetch(PROXY + path).then(function(r) { return r.json(); });
+}
+
+var sunIcon  = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+var moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+function toggleTheme() {
+  var html = document.documentElement;
+  var isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
+  localStorage.setItem('fb-theme', isDark ? 'light' : 'dark');
+}
+(function() {
+  var saved = localStorage.getItem('fb-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    if (saved === 'light') document.getElementById('themeIcon').innerHTML = sunIcon;
+  }
+})();
+
+var _tt = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  if (_tt) clearTimeout(_tt);
+  _tt = setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+
+function showError(msg) {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'flex';
+  if (msg) document.getElementById('errorMsg').textContent = msg;
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.sec-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.sec-panel').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+/* ── 메인 로드 ── */
+var params = new URLSearchParams(window.location.search);
+var ocid = params.get('ocid');
+if (!ocid) { showError('잘못된 접근입니다.'); }
+else {
+  Promise.all([
+    apiGet('/baram/v1/character/basic?ocid=' + ocid),
+    apiGet('/baram/v1/character/stat?ocid=' + ocid),
+    apiGet('/baram/v1/character/title?ocid=' + ocid),
+    apiGet('/baram/v1/character/title-equipment?ocid=' + ocid),
+    apiGet('/baram/v1/character/item-equipment?ocid=' + ocid),
+    apiGet('/baram/v1/character/guild?ocid=' + ocid)
+  ]).then(function(r) {
+    render(r[0], r[1], r[2], r[3], r[4], r[5]);
+  }).catch(function(e) {
+    showError('데이터를 불러오는 중 오류가 발생했습니다.');
+  });
+}
+
+function render(basic, stat, title, titleEq, equip, guild) {
+  document.getElementById('loadingState').style.display = 'none';
+
+  var name = basic.character_name || '-';
+  var cls  = (basic.character_class || '') + (basic.character_class_level ? ' ' + basic.character_class_level + '차' : '');
+  var lv   = basic.character_level ? 'Lv.' + basic.character_level : '-';
+  var world = basic.world_name || '-';
+  var avatar = basic.character_image ? '<img src="' + basic.character_image + '" alt="">' : '⚔️';
+  var equippedTitle = (titleEq.title && titleEq.title.title_name) ? titleEq.title.title_name : null;
+
+  document.title = name + ' — FATBOT';
+
+  /* 기본 정보 패널 */
+  var basicFields = [
+    ['직업', basic.character_class || '-'],
+    ['레벨', lv],
+    ['서버', world],
+    ['성별', basic.character_gender || '-'],
+    ['경험치', basic.character_exp_rate ? basic.character_exp_rate + '%' : '-'],
+    ['생성일', basic.character_date_create ? basic.character_date_create.substring(0,10) : '-']
+  ];
+  var basicHtml = '<div class="info-grid">' + basicFields.map(function(f) {
+    return '<div class="info-item"><div class="info-label">' + f[0] + '</div><div class="info-value">' + f[1] + '</div></div>';
+  }).join('') + '</div>';
+
+  /* 능력치 패널 */
+  var stats = stat.final_stat || [];
+  var statHtml = stats.length > 0
+    ? '<div class="stat-grid">' + stats.map(function(s) {
+        return '<div class="stat-item"><span class="stat-name">' + s.stat_name + '</span><span class="stat-val">' + s.stat_value + '</span></div>';
+      }).join('') + '</div>'
+    : '<div class="empty-msg">능력치 정보 없음</div>';
+
+  /* 칭호 패널 */
+  var titles = title.title || [];
+  var titleHtml = titles.length > 0
+    ? '<div class="title-list">' + titles.map(function(t) {
+        var eq = equippedTitle && t.title_name === equippedTitle;
+        return '<div class="title-item' + (eq ? ' equipped' : '') + '">'
+          + '<span class="equipped-dot"></span>'
+          + t.title_name
+          + (eq ? '<span class="equipped-badge">장착중</span>' : '')
+          + '</div>';
+      }).join('') + '</div>'
+    : '<div class="empty-msg">칭호 없음</div>';
+
+  /* 장착 아이템 패널 */
+  var items = equip.item_equipment || [];
+  var equipHtml = items.length > 0
+    ? '<div class="equip-grid">' + items.map(function(i) {
+        return '<div class="equip-item"><div class="equip-slot">' + (i.item_equipment_slot || '') + '</div><div class="equip-name">' + (i.item_name || '-') + '</div></div>';
+      }).join('') + '</div>'
+    : '<div class="empty-msg">장착 아이템 없음</div>';
+
+  /* 길드 패널 */
+  var guildHtml = (guild && guild.guild_name)
+    ? '<div class="guild-card"><div class="guild-icon">⚜️</div><div><div class="guild-name">' + guild.guild_name + '</div><div class="guild-world">' + (guild.world_name || '') + '</div></div></div>'
+    : '<div class="empty-msg">문파 미가입</div>';
+
+  var html = '<div class="profile-card">'
+    + '<div class="profile-header">'
+    +   '<div class="avatar">' + avatar + '</div>'
+    +   '<div class="profile-info">'
+    +     '<div class="char-name">' + name + '</div>'
+    +     '<div class="char-class">' + cls + '</div>'
+    +     '<div class="tag-row">'
+    +       '<span class="tag accent">' + lv + '</span>'
+    +       '<span class="tag">' + world + '</span>'
+    +       (guild && guild.guild_name ? '<span class="tag">' + guild.guild_name + '</span>' : '')
+    +       (equippedTitle ? '<span class="tag">' + equippedTitle + '</span>' : '')
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="sec-tabs">'
+    +   '<button class="sec-tab active" onclick="switchTab(\'basic\',this)">기본 정보</button>'
+    +   '<button class="sec-tab" onclick="switchTab(\'stat\',this)">능력치</button>'
+    +   '<button class="sec-tab" onclick="switchTab(\'title\',this)">칭호</button>'
+    +   '<button class="sec-tab" onclick="switchTab(\'equip\',this)">장착 아이템</button>'
+    +   '<button class="sec-tab" onclick="switchTab(\'guild\',this)">문파</button>'
+    + '</div>'
+    + '<div class="sec-panel active" id="panel-basic">' + basicHtml + '</div>'
+    + '<div class="sec-panel" id="panel-stat">' + statHtml + '</div>'
+    + '<div class="sec-panel" id="panel-title">' + titleHtml + '</div>'
+    + '<div class="sec-panel" id="panel-equip">' + equipHtml + '</div>'
+    + '<div class="sec-panel" id="panel-guild">' + guildHtml + '</div>'
+    + '</div>';
+
+  var page = document.getElementById('mainPage');
+  page.innerHTML = html;
+  page.style.display = 'block';
+}
+</script>
+</body>
+</html>
