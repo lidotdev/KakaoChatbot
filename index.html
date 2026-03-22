@@ -72,7 +72,9 @@ body { background: var(--color-bg-base); color: var(--color-text-primary); font-
 .theme-toggle:hover svg { stroke: var(--color-text-second); }
 
 .content { max-width: 900px; margin: 0 auto; padding: 0 32px; min-height: calc(100vh - 58px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.content.has-results { justify-content: flex-start; padding-top: 60px; }
+.content.has-results { justify-content: flex-start; padding-top: 48px; }
+.content.has-results .search-logo { display: none; }
+.content.has-results .search-wrap { gap: 0; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
 .search-outer { display: flex; flex-direction: column; align-items: center; width: 100%; }
