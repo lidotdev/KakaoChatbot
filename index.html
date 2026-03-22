@@ -212,7 +212,7 @@ function doSearch() {
   content.classList.add('has-results');
 
   if (_currentServer !== 'all') {
-    apiGet('/baram/v1/character/ocid?character_name=' + encodeURIComponent(name))
+    apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + (_currentServer !== 'all' ? '&server_name=' + encodeURIComponent(_currentServer) : ''))
       .then(function(d) {
         if (!d.ocid) throw new Error('캐릭터를 찾을 수 없습니다.');
         location.href = 'character.html?ocid=' + d.ocid;
@@ -222,7 +222,7 @@ function doSearch() {
       });
   } else {
     var promises = SERVERS.map(function(sv) {
-      return apiGet('/baram/v1/character/ocid?character_name=' + encodeURIComponent(name))
+      return apiGet('/baram/v1/id?character_name=' + encodeURIComponent(name) + (_currentServer !== 'all' ? '&server_name=' + encodeURIComponent(_currentServer) : ''))
         .then(function(d) {
           if (!d.ocid) return null;
           return apiGet('/baram/v1/character/basic?ocid=' + d.ocid)
